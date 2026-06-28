@@ -1,0 +1,18 @@
+flowchart TD
+    A([Start: User wants to visit a page]) --> B[Enter URL in input field]
+    B --> C{Is URL syntactically valid?}
+    C -- No --> D[Display Invalid URL error]
+    D --> Z([End])
+    C -- Yes --> E[Normalize URL with https:// prefix]
+    E --> F{Does URL match current page exactly?}
+    F -- Yes --> G[Display Duplicate Visit warning]
+    G --> Z
+    F -- No --> H{Is current node not the tail?}
+    H -- Yes --> I[Discard all forward nodes]
+    I --> J[Create new Node]
+    H -- No --> J
+    J --> K[Link new node after current: current.next = new, new.prev = current]
+    K --> L[Move tail and current pointers to new node]
+    L --> M[Persist full list snapshot to SQLite]
+    M --> N[Re-render Streamlit UI]
+    N --> Z

@@ -1,0 +1,41 @@
+stateDiagram-v2
+    [*] --> LoadData
+    LoadData --> Dashboard
+    Dashboard --> PatientModule
+    Dashboard --> DoctorModule
+    Dashboard --> AppointmentModule
+    Dashboard --> MedicalHistoryModule
+    Dashboard --> ReportsModule
+
+    PatientModule --> AddPatient
+    PatientModule --> SearchPatient
+    PatientModule --> UpdatePatient
+    PatientModule --> DeletePatient
+    AddPatient --> SaveToDB
+    UpdatePatient --> SaveToDB
+    DeletePatient --> SaveToDB
+    SaveToDB --> Dashboard
+
+    DoctorModule --> AddDoctor
+    DoctorModule --> RemoveDoctor
+    DoctorModule --> RotateDuty
+    RotateDuty --> SaveToDB
+    SaveToDB --> Dashboard
+
+    AppointmentModule --> BookAppointment
+    AppointmentModule --> CompleteAppointment
+    AppointmentModule --> CancelAppointment
+    BookAppointment --> SaveToDB
+    CompleteAppointment --> SaveToDB
+    CancelAppointment --> SaveToDB
+    SaveToDB --> Dashboard
+
+    MedicalHistoryModule --> AddVisit
+    MedicalHistoryModule --> PreviousVisit
+    MedicalHistoryModule --> NextVisit
+    MedicalHistoryModule --> DeleteVisit
+    AddVisit --> SaveToDB
+    DeleteVisit --> SaveToDB
+    SaveToDB --> Dashboard
+
+    Dashboard --> [*]

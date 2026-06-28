@@ -1,0 +1,38 @@
+erDiagram
+    PATIENTS ||--o{ MEDICAL_HISTORY : has
+    PATIENTS ||--o{ APPOINTMENTS : books
+
+    PATIENTS {
+        string patient_id PK
+        string name
+        int age
+        string gender
+        string contact
+        string blood_group
+    }
+
+    MEDICAL_HISTORY {
+        int id PK
+        string patient_id FK
+        string visit_date
+        string diagnosis
+        string prescription
+        string doctor_name
+    }
+
+    DOCTORS {
+        string doctor_id PK
+        string name
+        string department
+        string shift
+    }
+
+    APPOINTMENTS {
+        int id PK
+        string patient_id FK
+        string patient_name
+        string doctor_name
+        string department
+        string appointment_date
+        string status
+    }

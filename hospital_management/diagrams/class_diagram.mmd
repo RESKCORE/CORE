@@ -1,0 +1,105 @@
+classDiagram
+    class SLLNode {
+        +dict data
+        +SLLNode next
+    }
+
+    class SinglyLinkedList {
+        -SLLNode head
+        -int _size
+        +insert(data) void
+        +insert_at_end(data) void
+        +delete(key, value) bool
+        +update(key, value, new_data) bool
+        +search(key, value) dict
+        +to_list() list
+        +rebuild(items) void
+    }
+
+    class DLLNode {
+        +dict data
+        +DLLNode prev
+        +DLLNode next
+    }
+
+    class DoublyLinkedList {
+        -DLLNode head, tail, current
+        +insert(data) void
+        +delete(key, value) bool
+        +previous() dict
+        +next_visit() dict
+        +to_list() list
+        +rebuild(items, current_idx) void
+    }
+
+    class CLLNode {
+        +dict data
+        +CLLNode next
+    }
+
+    class CircularLinkedList {
+        -CLLNode head, current
+        +insert(data) void
+        +remove(key, value) bool
+        +rotate() dict
+        +to_list() list
+    }
+
+    class QueueNode {
+        +dict data
+        +QueueNode next
+    }
+
+    class Queue {
+        -QueueNode front, rear
+        +enqueue(data) void
+        +dequeue() dict
+        +peek() dict
+        +remove(key, value) bool
+        +to_list() list
+    }
+
+    class DatabaseManager {
+        +load_patients() list
+        +save_patients(list) void
+        +load_doctors() list
+        +save_doctors(list) void
+        +load_appointments() list
+        +save_appointments(list) void
+        +load_medical_history(pid) list
+        +save_medical_history(pid, list) void
+    }
+
+    class PatientManager {
+        -SinglyLinkedList list
+        +add_patient() dict
+        +delete_patient() bool
+        +search_patient() dict
+    }
+
+    class MedicalHistoryManager {
+        -dict histories
+        +add_visit() dict
+        +previous_visit() dict
+        +next_visit() dict
+    }
+
+    class DoctorManager {
+        -CircularLinkedList list
+        +add_doctor() dict
+        +remove_doctor() bool
+        +rotate_duty() dict
+        +current_doctor() dict
+    }
+
+    class AppointmentManager {
+        -Queue queue
+        +book_appointment() dict
+        +cancel_appointment() bool
+        +complete_appointment() dict
+    }
+
+    PatientManager --> SinglyLinkedList
+    MedicalHistoryManager --> DoublyLinkedList
+    DoctorManager --> CircularLinkedList
+    AppointmentManager --> Queue

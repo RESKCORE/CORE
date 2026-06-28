@@ -1,0 +1,18 @@
+flowchart LR
+    NULL1([null])
+    NULL2([null])
+
+    NULL1 --> V1[Visit: 01-Jan<br/>Diagnosis: Fever<br/>Dr. Sharma]
+    V1 --> V2[Visit: 15-Feb<br/>Diagnosis: Cough<br/>Dr. Patel]
+    V2 --> V3[Visit: 10-Mar<br/>Diagnosis: Allergy<br/>Dr. Singh]
+    V3 --> NULL2
+
+    V1 -.->|prev| NULL1
+    V2 -.->|prev| V1
+    V2 -.->|next| V3
+    V3 -.->|prev| V2
+    V3 -.->|next| NULL2
+
+    style V2 fill:#4CAF50,color:white
+    style NULL1 fill:#666,color:white
+    style NULL2 fill:#666,color:white

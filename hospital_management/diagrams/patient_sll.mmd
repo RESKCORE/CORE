@@ -1,0 +1,12 @@
+flowchart LR
+    HEAD([head])
+    NULL([null])
+
+    HEAD --> N1[PAT0001: John<br/>Age: 35<br/>Blood: A+]
+    N1 --> N2[PAT0002: Sarah<br/>Age: 28<br/>Blood: B+]
+    N2 --> N3[PAT0003: Mike<br/>Age: 42<br/>Blood: O+]
+    N3 --> N4[PAT0004: Emma<br/>Age: 31<br/>Blood: AB-]
+    N4 --> NULL
+
+    style HEAD fill:#FF9800,color:white
+    style NULL fill:#666,color:white

@@ -1,0 +1,20 @@
+flowchart TD
+    A([Start]) --> B[Load SQLite DB]
+    B --> C[Reconstruct Patient SLL]
+    B --> D[Reconstruct Doctor CLL]
+    B --> E[Reconstruct Appointment Queue]
+    C & D & E --> F[Streamlit UI Ready]
+    F --> G{User Action}
+    G -->|Add Patient| H[SLL.insert_at_end]
+    H --> I[Save to SQLite]
+    I --> F
+    G -->|Add Visit| J[DLL.insert]
+    J --> I
+    G -->|Rotate Duty| K[CLL.rotate]
+    K --> I
+    G -->|Book Appointment| L[Queue.enqueue]
+    L --> I
+    G -->|Complete Appointment| M[Queue.dequeue]
+    M --> I
+    G -->|Back/Forward Visit| N[DLL.previous/next]
+    N --> F

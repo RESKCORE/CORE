@@ -1,0 +1,25 @@
+sequenceDiagram
+    participant User
+    participant Streamlit
+    participant PatientManager
+    participant DatabaseManager
+    participant SQLite
+
+    User->>Streamlit: Add Patient Form
+    Streamlit->>PatientManager: add_patient(name, age, ...)
+    PatientManager->>PatientManager: SLL.insert_at_end(data)
+    PatientManager->>DatabaseManager: save_patients(all_patients)
+    DatabaseManager->>SQLite: DELETE + INSERT
+    SQLite-->>DatabaseManager: OK
+    DatabaseManager-->>PatientManager: Done
+    PatientManager-->>Streamlit: patient data
+    Streamlit-->>User: Success message
+
+    User->>Streamlit: Rotate Duty
+    Streamlit->>DoctorManager: rotate_duty()
+    DoctorManager->>DoctorManager: CLL.current = CLL.current.next
+    DoctorManager->>DatabaseManager: save_doctors(all_doctors)
+    DatabaseManager->>SQLite: DELETE + INSERT
+    SQLite-->>DatabaseManager: OK
+    DoctorManager-->>Streamlit: new current doctor
+    Streamlit-->>User: Updated UI

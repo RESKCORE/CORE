@@ -2,21 +2,20 @@ from __future__ import annotations
 import streamlit as st
 from typing import List
 from collections import Counter
+from utils import to_csv
 
 
 def render_reports(patients: List[dict], doctors: List[dict], appointments: List[dict]) -> None:
     st.title("📊 Reports & Analytics")
-    st.caption("Hospital statistics and data visualizations")
+    st.caption("Hospital statistics with data export")
 
     col1, col2 = st.columns(2)
-
     with col1:
         st.subheader("🧬 Blood Group Distribution")
         blood_groups = Counter(p.get("blood_group", "Unknown") for p in patients)
         if blood_groups:
-            labels = list(blood_groups.keys())
-            values = list(blood_groups.values())
-            st.bar_chart({"Blood Group": labels, "Count": values}, x="Blood Group", y="Count")
+            bg_df = {"Blood Group": list(blood_groups.keys()), "Count": list(blood_groups.values())}
+            st.bar_chart(bg_df, x="Blood Group", y="Count")
         else:
             st.info("No data available")
 
@@ -24,16 +23,13 @@ def render_reports(patients: List[dict], doctors: List[dict], appointments: List
         st.subheader("📂 Department Distribution")
         departments = Counter(d.get("department", "Unknown") for d in doctors)
         if departments:
-            labels = list(departments.keys())
-            values = list(departments.values())
-            st.bar_chart({"Department": labels, "Count": values}, x="Department", y="Count")
+            dept_df = {"Department": list(departments.keys()), "Count": list(departments.values())}
+            st.bar_chart(dept_df, x="Department", y="Count")
         else:
             st.info("No data available")
 
     st.divider()
-
     col3, col4 = st.columns(2)
-
     with col3:
         st.subheader("👤 Age Distribution")
         ages = [p.get("age", 0) or 0 for p in patients]
@@ -62,15 +58,12 @@ def render_reports(patients: List[dict], doctors: List[dict], appointments: List
         st.subheader("👨‍⚕️ Doctor Workload")
         doc_appts = Counter(a.get("doctor_name", "Unknown") for a in appointments)
         if doc_appts:
-            labels = list(doc_appts.keys())
-            values = list(doc_appts.values())
-            st.bar_chart({"Doctor": labels, "Appointments": values}, x="Doctor", y="Appointments")
+            st.bar_chart({"Doctor": list(doc_appts.keys()), "Appointments": list(doc_appts.values())}, x="Doctor", y="Appointments")
         else:
             st.info("No data available")
 
     st.divider()
     st.subheader("📊 Key Metrics")
-
     col5, col6, col7, col8 = st.columns(4)
     with col5:
         st.metric("👤 Total Patients", len(patients))
@@ -81,3 +74,20 @@ def render_reports(patients: List[dict], doctors: List[dict], appointments: List
     with col8:
         waiting = sum(1 for a in appointments if a.get("status") == "waiting")
         st.metric("⏳ Waiting", waiting)
+
+    st.divider()
+    st.subheader("📥 Download Reports")
+
+    dc1, dc2, dc3 = st.columns(3)
+    with dc1:
+        if patients:
+            csv_data = to_csv(patients)
+            st.download_button("📥 Download Patients CSV", data=csv_data, file_name="patients.csv", mime="text/csv", use_container_width=True)
+    with dc2:
+        if doctors:
+            csv_data = to_csv(doctors)
+            st.download_button("📥 Download Doctors CSV", data=csv_data, file_name="doctors.csv", mime="text/csv", use_container_width=True)
+    with dc3:
+        if appointments:
+            csv_data = to_csv(appointments)
+            st.download_button("📥 Download Appointments CSV", data=csv_data, file_name="appointments.csv", mime="text/csv", use_container_width=True)

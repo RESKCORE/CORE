@@ -1,8 +1,8 @@
 import streamlit as st
 from browser import BrowserApp
-from utils import format_url_display
+from utils import format_url_display, to_csv
 
-st.set_page_config(page_title="Browser History Manager", layout="wide")
+st.set_page_config(page_title="Browser History Manager", page_icon="🌐", layout="wide")
 
 if "browser" not in st.session_state:
     st.session_state.browser = BrowserApp()
@@ -13,7 +13,7 @@ browser: BrowserApp = st.session_state.browser
 
 with st.sidebar:
     st.markdown(
-        "<h1 style='text-align: center;'>🌐 Browser History<br>Manager</h1>",
+        "<h1 style='text-align: center; background: linear-gradient(90deg, #4CAF50, #2196F3); -webkit-background-clip: text; -webkit-text-fill-color: transparent;'>🌐 Browser History<br>Manager</h1>",
         unsafe_allow_html=True,
     )
     st.divider()
@@ -33,6 +33,14 @@ with st.sidebar:
         browser.clear_history()
         st.rerun()
 
+    st.divider()
+    total = browser.total_count
+    pos = browser.get_position()
+    if total > 0:
+        st.progress((pos + 1) / total, text=f"Page {pos + 1} of {total}")
+    else:
+        st.progress(0.0, text="No pages")
+
 # ── Main Area ───────────────────────────────────────────────────────────
 
 st.title("🌐 Browser History Manager")
@@ -42,7 +50,7 @@ st.caption("A doubly linked list demonstration using Streamlit + SQLite")
 
 col1, col2, col3, col4, col5, col6 = st.columns(6)
 with col1:
-    visit_clicked = st.button("🔗 Visit Website", use_container_width=True)
+    visit_clicked = st.button("🔗 Visit", use_container_width=True)
 with col2:
     back_clicked = st.button("◀ Back", use_container_width=True, disabled=not browser.can_go_back())
 with col3:
@@ -50,9 +58,9 @@ with col3:
 with col4:
     search_clicked = st.button("🔍 Search", use_container_width=True)
 with col5:
-    delete_sel_clicked = st.button("🗑️ Delete Selected", use_container_width=True)
+    delete_sel_clicked = st.button("🗑️ Delete", use_container_width=True)
 with col6:
-    clear_fwd = st.button("⏩ Delete Forward", use_container_width=True, disabled=not browser.can_go_forward())
+    clear_fwd = st.button("⏩ Del Fwd", use_container_width=True, disabled=not browser.can_go_forward())
 
 # ── URL Input ───────────────────────────────────────────────────────────
 
@@ -80,6 +88,19 @@ if clear_fwd:
     browser.delete_forward_history()
     st.rerun()
 
+# ── Stats Row ───────────────────────────────────────────────────────────
+
+st.divider()
+stat_col1, stat_col2, stat_col3, stat_col4 = st.columns(4)
+with stat_col1:
+    st.metric("📋 Total Pages", browser.total_count)
+with stat_col2:
+    st.metric("📍 Current Position", browser.get_position() + 1 if browser.total_count > 0 else 0)
+with stat_col3:
+    st.metric("⬅️ Can Go Back", "Yes" if browser.can_go_back() else "No")
+with stat_col4:
+    st.metric("➡️ Can Go Forward", "Yes" if browser.can_go_forward() else "No")
+
 # ── Current Page Card ───────────────────────────────────────────────────
 
 st.divider()
@@ -101,19 +122,42 @@ if current:
 else:
     st.info("💡 No page loaded. Visit a website to get started.")
 
+# ── Linked List Visualization ───────────────────────────────────────────
+
+st.divider()
+st.subheader("🔗 Linked List Visualization")
+
+history_data = browser.show_history()
+if history_data:
+    nodes_html = ""
+    for idx, (url, is_current) in enumerate(history_data):
+        label = format_url_display(url, 20)
+        if is_current:
+            nodes_html += f'<span style="background:#4CAF50; color:white; padding:10px 16px; border-radius:8px; font-weight:bold; margin:4px; border:2px solid #81C784;">📍 {label}</span>'
+        else:
+            nodes_html += f'<span style="background:#262730; color:#ccc; padding:10px 16px; border-radius:8px; margin:4px; border:1px solid #555;">{label}</span>'
+        if idx < len(history_data) - 1:
+            nodes_html += '<span style="color:#888; margin:0 4px; font-size:24px;"> ⇄ </span>'
+
+    st.markdown(
+        f'<div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; padding:16px; background:#0e1117; border-radius:12px; border:1px solid #333; min-height:80px;">{nodes_html}</div>',
+        unsafe_allow_html=True,
+    )
+    st.caption(f"📍 Green highlighted node = current page | {' ⇄ '.join(['bidirectional links'])}")
+else:
+    st.info("🔗 No nodes to display.")
+
 # ── History Table ───────────────────────────────────────────────────────
 
 st.divider()
 st.subheader("📜 History")
 
-history_data = browser.show_history()
 if history_data:
     rows = []
     for idx, (url, is_current) in enumerate(history_data):
         marker = "📍 **← You are here**" if is_current else ""
         rows.append({"#": idx + 1, "URL": url, "Status": marker})
 
-    # Build clickable table
     for r in rows:
         c1, c2, c3 = st.columns([1, 7, 2])
         with c1:
@@ -125,53 +169,37 @@ if history_data:
 else:
     st.info("📭 No history available.")
 
-# ── Current Position Indicator ──────────────────────────────────────────
+# ── Export ──────────────────────────────────────────────────────────────
 
-st.divider()
-st.subheader("📍 Position Indicator")
-
-total = browser.total_count
-pos = browser.get_position()
-if total > 0:
-    progress = (pos + 1) / total
-    st.progress(progress, text=f"Page {pos + 1} of {total}")
-else:
-    st.progress(0.0, text="No pages")
-
-# ── Linked List Visualization ───────────────────────────────────────────
-
-st.divider()
-st.subheader("🔗 Linked List Visualization")
-
-history_data = browser.show_history()
 if history_data:
-    nodes_html = ""
-    for idx, (url, is_current) in enumerate(history_data):
-        label = format_url_display(url, 25)
-        if is_current:
-            nodes_html += f'<span style="background:#4CAF50; color:white; padding:8px 14px; border-radius:8px; font-weight:bold; margin:4px;">📍 {label}</span>'
-        else:
-            nodes_html += f'<span style="background:#262730; color:#ccc; padding:8px 14px; border-radius:8px; margin:4px;">{label}</span>'
-        if idx < len(history_data) - 1:
-            nodes_html += '<span style="color:#888; margin:0 4px; font-size:20px;"> ⇄ </span>'
-
-    st.markdown(
-        f'<div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; padding:16px; background:#0e1117; border-radius:12px; border:1px solid #333;">{nodes_html}</div>',
-        unsafe_allow_html=True,
+    st.divider()
+    st.subheader("📥 Export History")
+    export_data = [{"position": i + 1, "url": url, "is_current": is_current} for i, (url, is_current) in enumerate(history_data)]
+    csv_data = to_csv(export_data)
+    st.download_button(
+        "📥 Download CSV",
+        data=csv_data,
+        file_name="browser_history.csv",
+        mime="text/csv",
+        use_container_width=True,
     )
-else:
-    st.info("🔗 No nodes to display.")
 
 # ── Search ──────────────────────────────────────────────────────────────
 
 st.divider()
 st.subheader("🔍 Search History")
 
-search_query = st.text_input("Search query", placeholder="Type a URL or keyword...", label_visibility="collapsed")
+search_query = st.text_input(
+    "Search query",
+    placeholder="Type a URL or keyword to search...",
+    label_visibility="collapsed",
+    key="search_input",
+)
 
 if search_query:
     results = browser.search(search_query)
     if results:
+        st.success(f"Found {len(results)} matching page(s)")
         for idx, url, is_current in results:
             cols = st.columns([1, 7, 2])
             with cols[0]:
@@ -205,6 +233,6 @@ with st.expander("🗄️ Database Status", expanded=False):
     c1.metric("📁 Database", "browser_history.db")
     c2.metric("📊 Records in DB", db_count)
     c3.metric("📋 Linked List Size", browser.total_count)
-    if st.button("🔄 Sync Database"):
+    if st.button("🔄 Sync Database", use_container_width=True):
         browser.sync_database()
         st.success("Database synced!")

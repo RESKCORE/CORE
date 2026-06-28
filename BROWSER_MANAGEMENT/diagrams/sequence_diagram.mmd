@@ -1,0 +1,31 @@
+sequenceDiagram
+    participant User
+    participant Streamlit as Streamlit UI
+    participant BrowserApp
+    participant BrowserHistory
+    participant DatabaseManager
+    participant SQLite
+
+    User->>Streamlit: Enter URL & click Visit
+    Streamlit->>BrowserApp: visit(url)
+    BrowserApp->>BrowserHistory: insert(url)
+    BrowserHistory->>BrowserHistory: Create Node, set prev/next
+    BrowserHistory->>BrowserHistory: Delete forward history
+    BrowserHistory-->>BrowserApp: Node
+    BrowserApp->>DatabaseManager: save_history(urls, current)
+    DatabaseManager->>SQLite: DELETE + INSERT rows
+    SQLite-->>DatabaseManager: OK
+    DatabaseManager-->>BrowserApp: Done
+    BrowserApp-->>Streamlit: True
+    Streamlit-->>User: Display updated UI
+
+    User->>Streamlit: Click Back
+    Streamlit->>BrowserApp: back()
+    BrowserApp->>BrowserHistory: back()
+    BrowserHistory->>BrowserHistory: current = current.prev
+    BrowserHistory-->>BrowserApp: current Node
+    BrowserApp->>DatabaseManager: save_history(urls, current)
+    DatabaseManager->>SQLite: Update is_current
+    SQLite-->>DatabaseManager: OK
+    BrowserApp-->>Streamlit: current URL
+    Streamlit-->>User: Display current page

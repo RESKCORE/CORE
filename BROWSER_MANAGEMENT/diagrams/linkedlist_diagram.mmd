@@ -1,0 +1,32 @@
+flowchart LR
+    subgraph DLL[Doubly Linked List]
+        direction LR
+        NULL1([null])
+        N1[Node: google.com]
+        N2[Node: youtube.com]
+        N3[Node: github.com]
+        N4[Node: chatgpt.com]
+        NULL2([null])
+
+        NULL1 -->|prev| N1
+        N1 -->|prev| NULL1
+        N1 -->|next| N2
+        N2 -->|prev| N1
+        N2 -->|next| N3
+        N3 -->|prev| N2
+        N3 -->|next| N4
+        N4 -->|prev| N3
+        N4 -->|next| NULL2
+        NULL2 --> N4
+    end
+
+    subgraph Pointers
+        HEAD[head] --> N1
+        TAIL[tail] --> N4
+        CURRENT[current] --> N3
+    end
+
+    style N3 fill:#4CAF50,color:white
+    style HEAD fill:#FF9800,color:white
+    style TAIL fill:#FF9800,color:white
+    style CURRENT fill:#4CAF50,color:white

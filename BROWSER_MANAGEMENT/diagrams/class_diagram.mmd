@@ -1,0 +1,57 @@
+classDiagram
+    class Node {
+        +str url
+        +Node prev
+        +Node next
+        +__init__(url: str)
+    }
+
+    class BrowserHistory {
+        -Node head
+        -Node tail
+        -Node current
+        -int _size
+        +insert(url: str) Node
+        +back() Node
+        +forward() Node
+        +show_current() str
+        +show_history() list
+        +search(query: str) list
+        +delete_page(url: str) bool
+        +clear_history() void
+        +delete_forward_history() void
+        +rebuild_from_urls(urls, current_url) void
+        +to_list() list
+        +size int
+        +get_position() int
+    }
+
+    class DatabaseManager {
+        -str db_path
+        +__init__(db_path: str)
+        +save_history(urls, current_url) void
+        +load_history() tuple
+        +clear_all() void
+        +get_record_count() int
+    }
+
+    class BrowserApp {
+        -BrowserHistory history
+        -DatabaseManager db
+        +visit(url: str) bool
+        +back() str
+        +forward() str
+        +show_current() str
+        +show_history() list
+        +search(query: str) list
+        +delete_page(url: str) bool
+        +clear_history() void
+        +delete_forward_history() void
+        +total_count int
+        +get_position() int
+        +sync_database() void
+    }
+
+    BrowserHistory --> Node : uses
+    BrowserApp --> BrowserHistory : has
+    BrowserApp --> DatabaseManager : has

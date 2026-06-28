@@ -1,0 +1,40 @@
+stateDiagram-v2
+    [*] --> AppLaunch
+    AppLaunch --> LoadFromDB
+    LoadFromDB --> RebuildList
+    RebuildList --> Idle
+
+    Idle --> VisitURL
+    VisitURL --> CreateNode
+    CreateNode --> SetPrevNext
+    SetPrevNext --> DeleteForwardHistory
+    DeleteForwardHistory --> SaveToDB
+    SaveToDB --> Idle
+
+    Idle --> NavigateBack
+    NavigateBack --> MoveCurrentPrev
+    MoveCurrentPrev --> UpdateDB
+    UpdateDB --> Idle
+
+    Idle --> NavigateForward
+    NavigateForward --> MoveCurrentNext
+    MoveCurrentNext --> UpdateDB
+    UpdateDB --> Idle
+
+    Idle --> Search
+    Search --> TraverseList
+    TraverseList --> DisplayResults
+    DisplayResults --> Idle
+
+    Idle --> DeletePage
+    DeletePage --> RemoveNode
+    RemoveNode --> FixPointers
+    FixPointers --> SaveToDB
+    SaveToDB --> Idle
+
+    Idle --> ClearHistory
+    ClearHistory --> RemoveAllNodes
+    RemoveAllNodes --> ClearDB
+    ClearDB --> Idle
+
+    Idle --> [*]

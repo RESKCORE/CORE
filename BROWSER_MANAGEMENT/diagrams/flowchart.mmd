@@ -1,0 +1,30 @@
+flowchart TD
+    A([Start]) --> B[Launch Streamlit App]
+    B --> C[DatabaseManager creates SQLite table]
+    C --> D[BrowserHistory loads data from DB]
+    D --> E[Reconstruct Doubly Linked List]
+    E --> F{User Action}
+    F -->|Visit URL| G[Create new Node]
+    G --> H[Set prev = current node]
+    H --> I[Set current.next = new node]
+    I --> J[Delete forward history nodes]
+    J --> K[Merge node into list]
+    K --> L[Save to SQLite]
+    L --> F
+    F -->|Back| M[Move current = current.prev]
+    M --> N[Update DB is_current flag]
+    N --> F
+    F -->|Forward| O[Move current = current.next]
+    O --> P[Update DB is_current flag]
+    P --> F
+    F -->|Search| Q[Traverse list & match URL]
+    Q --> R[Display matching results]
+    R --> F
+    F -->|Delete| S[Remove node from list]
+    S --> T[Fix prev/next pointers]
+    T --> U[Save to SQLite]
+    U --> F
+    F -->|Clear History| V[Remove all nodes]
+    V --> W[Delete all SQLite records]
+    W --> F
+    F -->|Exit| X([End])
